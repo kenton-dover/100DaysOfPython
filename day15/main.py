@@ -28,11 +28,22 @@ resources = {
     "water": 300,
     "milk": 200,
     "coffee": 100,
+    "money": 0,
 }
 
 
 def check_resources(drink: str):
-    MENU["cappuccino"]
+    for key in MENU["cappuccino"]["ingredients"]:
+        if resources[key] < MENU["cappuccino"]["ingredients"][key]:
+            print(f"Sorry there is not enough {key}")
+            return False
+    return True
+
+
+def make_coffee(drink: str):
+    for key in MENU["cappuccino"]["ingredients"]:
+        resources[key] = resources[key] - MENU["cappuccino"]["ingredients"][key]
+    print(f"Here is your {drink}. Enjoy!")
 
 
 status = True
@@ -44,4 +55,18 @@ while status:
     elif drink == "report":
         print(resources)
     else:
-        check_resources(drink)
+        if check_resources(drink):
+            quarters, dimes, nickels, pennies = map(
+                int,
+                input(
+                    "Enter coins: quarters, dimes, nickels, pennies like 1 1 0 1 for .36 "
+                ).split(),
+            )
+            cost = MENU[drink]["cost"]
+            amount = quarters * 0.25 + dimes * 0.10 + nickels * 0.05 + pennies * 0.01
+            if amount < cost:
+                print("Sorry thats not enough money. Money refunded")
+            elif amount > cost:
+                print(f"Here is your change: {amount - cost}")
+            resources["money"] = resources["money"] + cost  # type: ignore
+            make_coffee(drink)
